@@ -1,0 +1,30 @@
+services:
+  nestjs_starter_postgres: # Edit
+    image: postgres:alpine
+    container_name: nestjs_starter_postgres # Edit
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    ports:
+      - '5432:5432'
+    volumes:
+      - nestjs_starter_postgres_data:/var/lib/postgresql/data # Edit
+  
+  nestjs_starter_redis:
+    image: redis:alpine
+    container_name: nestjs_starter_redis # Edit
+    ports:
+      - '6379:6379'
+    volumes:
+      - nestjs_starter_redis_data:/data # Edit
+
+networks:
+  default:
+    name: nestjs_starter # Edit
+
+volumes:
+  nestjs_starter_postgres_data: # Edit
+  nestjs_starter_redis_data: # Edit
