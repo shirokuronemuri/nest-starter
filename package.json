@@ -6,6 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
+    "postinstall": "pnpm prisma generate",
     "start": "nest start",
     "start:dev": "pnpm d:up && nest start --watch",
     "start:debug": "nest start --debug --watch",
@@ -21,15 +22,23 @@
     "d:up": "docker-compose up -d",
     "d:down": "docker-compose down",
     "d:logs": "docker-compose logs -f",
-    "d:restart": "pnpm d:down && pnpm d:up"
+    "d:restart": "pnpm d:down && pnpm d:up",
+    "db:m:dev": "pnpm exec prisma migrate dev",
+    "db:m:prod": "pnpm exec prisma migrate deploy",
+    "db:g": "pnpm exec prisma generate"
   },
   "dependencies": {
+    "@keyv/redis": "^5.1.4",
+    "@nestjs/cache-manager": "^3.0.1",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.1",
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/swagger": "^11.2.3",
+    "@prisma/adapter-pg": "^7.0.1",
     "@prisma/client": "^7.0.1",
+    "@prisma/client-runtime-utils": "^7.0.1",
+    "cache-manager": "^7.2.5",
     "helmet": "^8.1.0",
     "nestjs-zod": "^5.0.1",
     "reflect-metadata": "^0.2.2",

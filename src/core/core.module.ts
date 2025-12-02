@@ -4,7 +4,7 @@ import {
   type MiddlewareConsumer,
   type NestModule,
 } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import config from 'src/config';
 import { TransformResponseInterceptor } from './interceptors/transform-response/transform-response.interceptor';
@@ -12,6 +12,9 @@ import { ZodSerializerInterceptor, ZodValidationPipe } from 'nestjs-zod';
 import { HttpExceptionFilter } from './filters/http-exception/http-exception.filter';
 import { LoggerService } from './services/logger/logger.service';
 import { LoggerMiddleware } from './middlewares/logger/logger.middleware';
+import { DatabaseService } from 'src/database/database.service';
+import { CacheModule } from '@nestjs/cache-manager';
+import KeyvRedis from '@keyv/redis';
 
 @Global()
 @Module({
@@ -19,6 +22,16 @@ import { LoggerMiddleware } from './middlewares/logger/logger.middleware';
     ConfigModule.forRoot({
       isGlobal: true,
       load: [config],
+    }),
+    CacheModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+        return {
+          ttl: 5000,
+          stores: [new KeyvRedis(configService.get<string>('redisUrl'))],
+        };
+      },
     }),
   ],
   providers: [
@@ -39,8 +52,9 @@ import { LoggerMiddleware } from './middlewares/logger/logger.middleware';
       useClass: HttpExceptionFilter,
     },
     LoggerService,
+    DatabaseService,
   ],
-  exports: [LoggerService],
+  exports: [LoggerService, DatabaseService, CacheModule],
 })
 export class CoreModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
