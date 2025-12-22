@@ -18,13 +18,16 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "test:e2e": "pnpm d:up:test && pnpm db:m:test && NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" dotenv -e .env.test -- jest --runInBand --config ./test/jest-e2e.json && pnpm d:down:test",
     "d:up": "docker-compose up -d",
     "d:down": "docker-compose down",
+    "d:up:test": "docker-compose -f docker-compose-test.yml up -d",
+    "d:down:test": "docker-compose -f docker-compose-test.yml down",
     "d:logs": "docker-compose logs -f",
     "d:restart": "pnpm d:down && pnpm d:up",
-    "db:m:dev": "pnpm exec prisma migrate dev",
-    "db:m:prod": "pnpm exec prisma migrate deploy",
+    "db:m:dev": "pnpm exec prisma migrate dev && pnpm db:g",
+    "db:m:test": "dotenv -e .env.test -- pnpm exec prisma migrate reset --force",
+    "db:m:prod": "pnpm exec prisma migrate deploy && pnpm db:g",
     "db:g": "pnpm exec prisma generate"
   },
   "dependencies": {
@@ -35,9 +38,8 @@
     "@nestjs/core": "^11.0.1",
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/swagger": "^11.2.3",
-    "@prisma/adapter-pg": "^7.0.1",
-    "@prisma/client": "^7.0.1",
-    "@prisma/client-runtime-utils": "^7.0.1",
+    "@prisma/adapter-pg": "^7.2.0",
+    "@prisma/client": "^7.2.0",
     "cache-manager": "^7.2.5",
     "helmet": "^8.1.0",
     "nestjs-zod": "^5.0.1",
@@ -57,11 +59,13 @@
     "@types/node": "^22.10.7",
     "@types/supertest": "^6.0.2",
     "dotenv": "^17.2.3",
+    "dotenv-cli": "^11.0.0",
     "eslint": "^9.18.0",
     "globals": "^16.0.0",
     "jest": "^30.0.0",
+    "jest-mock-extended": "^4.0.0",
     "prettier": "^3.4.2",
-    "prisma": "^7.0.1",
+    "prisma": "^7.2.0",
     "source-map-support": "^0.5.21",
     "supertest": "^7.0.0",
     "ts-jest": "^29.2.5",
@@ -86,6 +90,9 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "^src/(.*)$": "<rootDir>/$1"
+    }
   }
 }
