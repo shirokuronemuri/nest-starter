@@ -13,4 +13,6 @@ runs:
         version: latest
     - name: Install dependencies
       shell: bash
+      env: 
+        DATABASE_URL: "postgesql://username:password@localhost:5432/db"
       run: pnpm install
