@@ -14,6 +14,8 @@ COPY . .
 
 RUN pnpm build
 
+RUN pnpm prune --prod
+
 EXPOSE 6100
 
 CMD ["pnpm", "start:prod"]
