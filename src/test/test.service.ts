@@ -12,8 +12,8 @@ export class TestService {
   async test() {
     const value = await this.cache.get<string>('key');
     if (!value) {
-      await this.cache.set('key', 'cached');
+      await this.cache.set('key', 'Got from cache!');
     }
-    return value ?? 'not cached';
+    return value ?? 'Put in cache!';
   }
 }
