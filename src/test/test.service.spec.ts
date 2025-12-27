@@ -32,12 +32,12 @@ describe('TestService', () => {
   describe('root', () => {
     it('should return uncached value if using function first time', async () => {
       const result = await testService.test();
-      expect(result).toBe('not cached');
+      expect(result).toBe('Put in cache!');
     });
     it('should return cached value if using function twice', async () => {
       await testService.test();
       const result = await testService.test();
-      expect(result).toBe('cached');
+      expect(result).toBe('Got from cache!');
     });
   });
 });
