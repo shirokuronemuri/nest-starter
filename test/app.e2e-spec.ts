@@ -7,7 +7,7 @@ describe('AppController (e2e)', () => {
       .get('/')
       .expect(200)
       .expect(({ body }: { body: { data: string } }) => {
-        expect(body.data).toBe('not cached');
+        expect(body.data).toBe('Put in cache!');
       });
   });
 });
