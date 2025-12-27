@@ -1,4 +1,4 @@
-FROM node:20-alpine
+FROM node:24-alpine
 
 RUN corepack enable
 
@@ -13,8 +13,6 @@ RUN pnpm install --frozen-lockfile
 COPY . .
 
 RUN pnpm build
-
-RUN pnpm prune --prod
 
 EXPOSE 6100
 
