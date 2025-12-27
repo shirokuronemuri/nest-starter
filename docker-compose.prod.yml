@@ -26,6 +26,7 @@ services:
   nest_starter_redis:
     image: redis:alpine
     container_name: nest_starter_redis # Edit
+    restart: always
     volumes:
       - nest_starter_redis_data:/data # Edit
 
