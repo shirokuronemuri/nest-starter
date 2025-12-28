@@ -6,7 +6,7 @@ services:
     env_file:
       - .env.production
     ports:
-      - "127.0.0.1:6100:6100"
+      - "127.0.0.1:${PORT}:${PORT}"
     depends_on:
       - nest_starter_postgres
       - nest_starter_redis
@@ -26,6 +26,7 @@ services:
   nest_starter_redis:
     image: redis:alpine
     container_name: nest_starter_redis # Edit
+    command: redis-server --requirepass ${REDIS_PASSWORD}
     restart: always
     volumes:
       - nest_starter_redis_data:/data # Edit
