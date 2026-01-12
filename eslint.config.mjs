@@ -1,8 +1,8 @@
-// @ts-check
 import eslint from '@eslint/js';
 import { defineConfig } from 'eslint/config';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
+import jestPlugin from 'eslint-plugin-jest';
 
 export default defineConfig(
   {
@@ -19,13 +19,6 @@ export default defineConfig(
       sourceType: 'commonjs',
       parserOptions: {
         tsconfigRootDir: import.meta.dirname,
-        projectService: {
-          allowDefaultProject: [
-            'test/app.e2e-spec.ts',
-            'test/setup.ts',
-            'prisma.config.ts',
-          ],
-        },
       },
     },
   },
@@ -34,6 +27,16 @@ export default defineConfig(
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-floating-promises': 'warn',
       '@typescript-eslint/no-unsafe-argument': 'warn',
+    },
+  },
+  {
+    files: ['**/*.{spec,e2e,int-spec}.{ts,js}'],
+    plugins: {
+      jestPlugin,
+    },
+    rules: {
+      '@typescript-eslint/unbound-method': 'off',
+      'jest/unbound-method': 'error',
     },
   },
 );

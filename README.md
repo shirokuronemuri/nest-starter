@@ -6,7 +6,7 @@
 
 ## Dev setup
 
-create `.env` and `.env.test` files based on `.env.example`, then:
+create `.env` file based on `.env.example`, then:
 
 ```bash
 $ pnpm install
@@ -23,12 +23,12 @@ $ pnpm start:dev
 
 ## Production setup
 
-create `.env.production` file based on `.env.example`, then:
+Create `.env.production` file based on `.env.example`, then:
 
 ```bash
 # build the app image and upload it to docker hub (you need to login with the username you specified in .env.production)
 $ pnpm d:build:prod
-$ docker tag nest-starter:latest [yourusername]/nest-starter:latest
+$ docker tag [project-name]:latest [yourusername]/[project-name]:latest
 
 # then copy .env.production, package.json and docker-compose.prod.yml to your server and run the containers
 $ pnpm d:up:prod
@@ -42,13 +42,20 @@ $ pnpm d:down:prod
 
 ## Run tests
 
+Create `.env.test` file based on `.env.example`, then:
+
 ```bash
-# unit tests
-$ pnpm run test
+# run test containers
+$ pnpm d:up:test
 
-# e2e tests
-$ pnpm run test:e2e
+# apply database migrations
+$ pnpm db:m:test
 
+# run unit tests
+$ pnpm test
+
+# run e2e and integration tests
+$ pnpm test:e2e
 ```
 
 ## API
