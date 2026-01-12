@@ -11,6 +11,7 @@ export const envSchema = z.object({
   PORT: z.preprocess(emptyToUndefined, z.coerce.number().default(3000)),
   DATABASE_URL: z.url(),
   REDIS_URL: z.url(),
+  HOST: z.preprocess(emptyToUndefined, z.url().optional()),
 });
 
 export type Env = z.infer<typeof envSchema>;

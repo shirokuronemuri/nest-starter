@@ -5,8 +5,8 @@ import {
 } from '@nestjs/common';
 import { PrismaClient } from './generated/prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
-import { ConfigService } from '@nestjs/config';
 import { LoggerService } from 'src/core/services/logger/logger.service';
+import { TypedConfigService } from 'src/config/typed-config.service';
 
 @Injectable()
 export class DatabaseService
@@ -14,11 +14,11 @@ export class DatabaseService
   implements OnModuleInit, OnModuleDestroy
 {
   constructor(
-    private readonly config: ConfigService,
+    private readonly config: TypedConfigService,
     private readonly logger: LoggerService,
   ) {
     const adapter = new PrismaPg({
-      connectionString: config.get<string>('dbUrl'),
+      connectionString: config.get('db.url'),
     });
     super({ adapter, log: ['info', 'warn', 'error'] });
   }
@@ -30,16 +30,20 @@ export class DatabaseService
     } catch (err) {
       const isErrObject = err instanceof Error;
       this.logger.error(
-        `Prisma connection error: ${isErrObject ? err.message : err}`,
+        `Prisma connection error: ${isErrObject ? err.message : String(err)}`,
         isErrObject ? err.stack : undefined,
         DatabaseService.name,
       );
+      if (this.config.get('app.environment') === 'test') {
+        process.exit(1);
+      }
     }
   }
   async onModuleDestroy() {
     await this.$disconnect();
     this.logger.log('Prisma disconnected from PostgreSQL');
   }
+
   async reset() {
     const tablenames = await this.$queryRaw<
       Array<{ tablename: string }>
@@ -56,7 +60,7 @@ export class DatabaseService
     } catch (err) {
       const isErrObject = err instanceof Error;
       this.logger.error(
-        `Failed resetting the DB: ${isErrObject ? err.message : err}`,
+        `Failed resetting the DB: ${isErrObject ? err.message : String(err)}`,
         isErrObject ? err.stack : undefined,
         DatabaseService.name,
       );
