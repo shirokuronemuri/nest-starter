@@ -14,22 +14,22 @@ jobs:
       - uses: ./.github/actions/build
       - name: Run tests
         run: pnpm test
-  e2e-tests:
+  int-e2e-tests:
     runs-on: ubuntu-latest
-    steps:  
+    steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/build
-      - name: Create .env.test
+      - name: Generate .env.test for CI
         run: |
-          cat <<EOF > .env.test
-          NODE_ENV=test
-          POSTGRES_USER=username
-          POSTGRES_PASSWORD=password
-          DATABASE_URL="postgresql://username:password@localhost:5434/mydb?schema=public" 
-          REDIS_URL="redis://localhost:6381"
-          EOF
-      - name: Run e2e tests
-        run: pnpm test:e2e
-        env: 
+          touch .env.test
+      - name: Run integration and e2e tests
+        run: pnpm test:e2e:ci
+        env:
           POSTGRES_USER: username
           POSTGRES_PASSWORD: password
+          REDIS_PASSWORD: password
+          NODE_ENV: test
+          HOST: http://localhost:3001
+          PORT: 3001
+          DATABASE_URL: postgresql://username:password@localhost:5434/mydb?schema=public
+          REDIS_URL: redis://:password@localhost:6381
