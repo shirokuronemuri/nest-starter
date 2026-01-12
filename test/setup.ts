@@ -3,29 +3,33 @@ import { INestApplication } from '@nestjs/common';
 import { App } from 'supertest/types';
 import { AppModule } from './../src/app.module';
 import helmet from 'helmet';
-import { DatabaseService } from '../src/database/database.service';
-import { CACHE_MANAGER, type Cache } from '@nestjs/cache-manager';
+import { DatabaseService } from '../src/services/database/database.service';
+import { RedisService } from '../src/services/redis/redis.service';
+import { ThrottlerGuard } from '@nestjs/throttler';
 
 let app: INestApplication<App>;
 let server: App;
 let databaseService: DatabaseService;
-let cacheService: Cache;
+let redis: RedisService;
 
 beforeAll(async () => {
   const moduleFixture: TestingModule = await Test.createTestingModule({
     imports: [AppModule],
-  }).compile();
+  })
+    .overrideGuard(ThrottlerGuard)
+    .useValue({ canActivate: () => true })
+    .compile();
 
   app = moduleFixture.createNestApplication();
   app.use(helmet());
   await app.init();
   server = app.getHttpServer();
   databaseService = app.get(DatabaseService);
-  cacheService = app.get(CACHE_MANAGER);
+  redis = app.get(RedisService);
 });
 
-afterEach(async () => {
-  await cacheService.clear();
+beforeEach(async () => {
+  await redis.client.flushdb();
   await databaseService.reset();
 });
 
@@ -33,4 +37,4 @@ afterAll(async () => {
   await app.close();
 });
 
-export { server, databaseService, cacheService };
+export { server, app };
