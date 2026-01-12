@@ -6,7 +6,7 @@
 
 ## Dev setup
 
-create `.env` file based on `.env.example`, then:
+Create `.env` file based on `.env.example`, then:
 
 ```bash
 $ pnpm install
@@ -23,18 +23,28 @@ $ pnpm start:dev
 
 ## Production setup
 
-1. Create `.env.production` file based on `.env.example`;
-2. Change the dockerhub repository name in `docker-compose.prod.yml`;
-3. Run the commands:
+1. Create `.env.production` file based on `.env.example`
+2. Change the dockerhub image name in `docker-compose.prod.yml` if needed
 
-```bash
-# build the app image and upload it to docker hub (you need to login with the username you specified in .env.production)
-$ pnpm d:build:prod
-$ docker tag [project-name]:latest [yourusername]/[project-name]:latest
+4. choose one of two:
 
-# then copy .env.production, package.json and docker-compose.prod.yml to your server and run the containers
-$ pnpm d:up:prod
-```
+- if deploying manually, run the following commands (you need to be logged into dockerhub): 
+
+  ```bash
+  # (windows env variable syntax is also supported)
+  $ DOCKERNAME_USERNAME=yourusername APP_NAME=nest-starter pnpm d:build:prod
+  $ DOCKERNAME_USERNAME=yourusername APP_NAME=nest-starter pnpm d:push:prod
+  ```
+
+  Then copy .env.production, package.json and docker-compose.prod.yml to your server and run the containers:
+
+  ```bash
+  $ pnpm d:up:prod
+  ```
+
+- if using github actions for build, modify deploy.yml for your needs, set the required repository secrets and run the workflow
+
+5. 
 
 To stop production server run: 
 
