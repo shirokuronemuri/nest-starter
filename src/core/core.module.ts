@@ -4,17 +4,19 @@ import {
   type MiddlewareConsumer,
   type NestModule,
 } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import config from 'src/config';
-import { TransformResponseInterceptor } from './interceptors/transform-response/transform-response.interceptor';
 import { ZodSerializerInterceptor, ZodValidationPipe } from 'nestjs-zod';
 import { HttpExceptionFilter } from './filters/http-exception/http-exception.filter';
 import { LoggerService } from './services/logger/logger.service';
 import { LoggerMiddleware } from './middlewares/logger/logger.middleware';
-import { DatabaseService } from 'src/database/database.service';
-import { CacheModule } from '@nestjs/cache-manager';
-import KeyvRedis from '@keyv/redis';
+import { DatabaseService } from 'src/services/database/database.service';
+import { TypedConfigService } from 'src/config/typed-config.service';
+import { RedisProvider } from 'src/services/redis/redis.provider';
+import { RedisService } from 'src/services/redis/redis.service';
+import { ThrottlerModule } from '@nestjs/throttler';
+import { ThrottlerStorageRedisService } from '@nest-lab/throttler-storage-redis';
 
 @Global()
 @Module({
@@ -23,15 +25,24 @@ import KeyvRedis from '@keyv/redis';
       isGlobal: true,
       load: [config],
     }),
-    CacheModule.registerAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => {
-        return {
-          ttl: 5000,
-          stores: [new KeyvRedis(configService.get<string>('redisUrl'))],
-        };
-      },
+    ThrottlerModule.forRootAsync({
+      inject: [TypedConfigService],
+      useFactory: (config: TypedConfigService) => ({
+        throttlers: [
+          {
+            name: 'main',
+            ttl: 60 * 1000,
+            limit: 100,
+          },
+          {
+            name: 'burst',
+            ttl: 1000,
+            limit: 5,
+          },
+        ],
+        errorMessage: 'Too Many Requests',
+        storage: new ThrottlerStorageRedisService(config.get('redis.url')),
+      }),
     }),
   ],
   providers: [
@@ -44,17 +55,16 @@ import KeyvRedis from '@keyv/redis';
       useClass: ZodSerializerInterceptor,
     },
     {
-      provide: APP_INTERCEPTOR,
-      useClass: TransformResponseInterceptor,
-    },
-    {
       provide: APP_FILTER,
       useClass: HttpExceptionFilter,
     },
     LoggerService,
     DatabaseService,
+    RedisProvider,
+    RedisService,
+    TypedConfigService,
   ],
-  exports: [LoggerService, DatabaseService, CacheModule],
+  exports: [LoggerService, DatabaseService, RedisService, TypedConfigService],
 })
 export class CoreModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
