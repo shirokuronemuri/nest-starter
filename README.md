@@ -23,7 +23,9 @@ $ pnpm start:dev
 
 ## Production setup
 
-Create `.env.production` file based on `.env.example`, then:
+1. Create `.env.production` file based on `.env.example`;
+2. Change the dockerhub repository name in `docker-compose.prod.yml`;
+3. Run the commands:
 
 ```bash
 # build the app image and upload it to docker hub (you need to login with the username you specified in .env.production)
