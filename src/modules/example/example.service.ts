@@ -22,7 +22,7 @@ export class ExampleService {
     const exampleOutput = [
       {
         id: 1,
-        title: 'example 2',
+        title: 'example 1',
         createdAt: new Date(),
         updatedAt: new Date(),
       },
