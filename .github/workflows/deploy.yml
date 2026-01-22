@@ -33,5 +33,4 @@ jobs:
             export PNPM_HOME="/home/${{ secrets.VPS_USER }}/.local/share/pnpm"
             export PATH="$PNPM_HOME:$PATH"
             cd /opt/server/${{ github.event.repository.name }}
-            pnpm d:down:prod
             pnpm d:up:prod
