@@ -24,6 +24,4 @@ COPY --from=builder /app/dist ./dist
 
 RUN pnpm install --prod --frozen-lockfile
 
-RUN pnpm add prisma
-
 CMD ["pnpm", "start:prod"]
