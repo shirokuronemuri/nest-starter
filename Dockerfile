@@ -18,7 +18,7 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 COPY --from=builder /app/package.json ./
-COPY --from=builder /app/pnpm.lock ./
+COPY --from=builder /app/pnpm-lock.yaml ./
 COPY --from=builder /app/prisma.config.ts ./
 COPY --from=builder /app/dist ./dist
 
