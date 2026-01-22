@@ -30,6 +30,8 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
+            export PNPM_HOME="~/.local/share/pnpm"
+            export PATH="$PNPM_HOME:$PATH"
             cd /opt/server/${{ github.event.repository.name }}
             pnpm d:down:prod
             pnpm d:up:prod
