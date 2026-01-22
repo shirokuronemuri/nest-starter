@@ -3,8 +3,6 @@ services:
     image: postgres:alpine
     container_name: nest_starter_postgres_dev # Edit
     restart: always
-    env_file:
-      - .env
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
@@ -12,7 +10,7 @@ services:
       - '5433:5432'
     volumes:
       - postgres_dev_data:/var/lib/postgresql/data
-  
+
   nest_starter_redis_dev: # Edit
     image: redis:alpine
     container_name: nest_starter_redis_dev # Edit

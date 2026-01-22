@@ -13,7 +13,7 @@ import { LoggerService } from './services/logger/logger.service';
 import { LoggerMiddleware } from './middlewares/logger/logger.middleware';
 import { DatabaseService } from 'src/services/database/database.service';
 import { TypedConfigService } from 'src/config/typed-config.service';
-import { RedisProvider } from 'src/services/redis/redis.provider';
+import { RedisProvider } from 'src/core/providers/redis.provider';
 import { RedisService } from 'src/services/redis/redis.service';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { ThrottlerStorageRedisService } from '@nest-lab/throttler-storage-redis';
@@ -23,6 +23,7 @@ import { ThrottlerStorageRedisService } from '@nest-lab/throttler-storage-redis'
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: `.env.${process.env.NODE_ENV}`,
       load: [config],
     }),
     ThrottlerModule.forRootAsync({

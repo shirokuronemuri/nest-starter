@@ -3,8 +3,6 @@ services:
     image: postgres:alpine
     container_name: nest_starter_postgres_test # Edit
     restart: no
-    env_file:
-      - .env.test
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
@@ -12,7 +10,7 @@ services:
       - '5434:5432'
     volumes:
       - postgres_test_data:/var/lib/postgresql/data
-  
+
   nest_starter_redis_test: # Edit
     image: redis:alpine
     container_name: nest_starter_redis_test # Edit
